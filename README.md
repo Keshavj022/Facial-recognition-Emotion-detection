@@ -25,7 +25,7 @@ This project implements a robust facial recognition and emotion detection system
 ### Installation Steps
 1. **Clone the Repository:**
     ```bash
-    git clone https://github.com/your-username/facial-recognition-emotion-detection.git
+    git clone https://github.com/Keshavj022/Facial-recognition-Emotion-detection.git
     cd facial-recognition-emotion-detection
     ```
 2. **Install Required Libraries:**
