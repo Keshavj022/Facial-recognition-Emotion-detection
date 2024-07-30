@@ -26,7 +26,7 @@ This project implements a robust facial recognition and emotion detection system
 1. **Clone the Repository:**
     ```bash
     git clone https://github.com/Keshavj022/Facial-recognition-Emotion-detection.git
-    cd facial-recognition-emotion-detection
+    cd Facial-recognition-Emotion-detection
     ```
 2. **Install Required Libraries:**
     You can use pip to install the necessary libraries:
