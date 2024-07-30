@@ -43,7 +43,7 @@ This project implements a robust facial recognition and emotion detection system
 To register a new face, use the GUI application:
 1. Run the application:
     ```bash
-    python app.py
+    python face_recognition.py
     ```
 2. Click on "Register Face" and enter the name of the person.
 3. The system will capture images and save them for training.
@@ -52,7 +52,7 @@ To register a new face, use the GUI application:
 To recognize faces:
 1. Run the application:
     ```bash
-    python app.py
+    python face_recognition.py
     ```
 2. Click on "Recognize Face" to start the face recognition and emotion detection process.
 
@@ -62,7 +62,6 @@ To recognize faces:
 
 ## Code Overview
 - `face_recognition.py`: Contains functions for face encoding, recognition, and emotion detection.
-- `app.py`: The main GUI application script using Tkinter.
 - `requirements.txt`: Lists the required Python libraries.
 
 ## Contributing
