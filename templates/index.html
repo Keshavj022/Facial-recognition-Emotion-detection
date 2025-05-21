@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition & Emotion Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gradient: linear-gradient(135deg, #4361ee, #7209b7);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.7;
+        }
+        
+        .header {
+            background: var(--gradient);
+            color: white;
+            padding: 3rem 0 6rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 4rem;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiPjxwYXRoIGQ9Ik0tMTAgMTBsMjAgLTIwTTAgMGwyMCAtMjBNMTAgMTBsMjAgLTIwIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+            opacity: 0.2;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p.lead {
+            font-weight: 300;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card-container {
+            margin-top: -4rem;
+        }
+        
+        .main-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-container::before {
+            content: '';
+            display: block;
+            padding-top: 75%; /* 4:3 aspect ratio */
+        }
+        
+        .video-container img, 
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .controls {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #05c091;
+            border-color: #05c091;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(6, 214, 160, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #e63e65;
+            border-color: #e63e65;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(239, 71, 111, 0.3);
+        }
+        
+        .status-container {
+            background-color: rgba(248, 249, 250, 0.8);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background-color: rgba(6, 214, 160, 0.15);
+            color: var(--success);
+        }
+        
+        .status-badge.inactive {
+            background-color: rgba(108, 117, 125, 0.15);
+            color: var(--gray);
+        }
+        
+        .feature-card {
+            height: 100%;
+            border-radius: 15px;
+            border: none;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+            margin-bottom: 0;
+        }
+        
+        .about-section {
+            position: relative;
+            padding: 4rem 0;
+        }
+        
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+CjxyZWN0IHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0id2hpdGUiPjwvcmVjdD4KPHBhdGggZD0iTTAgMzBhMzAgMzAgMCAwIDEgNjAgMCAzMCAzMCAwIDAgMS02MCAweiIgZmlsbD0iI2YwZjJmNSI+PC9wYXRoPgo8L3N2Zz4=');
+            opacity: 0.4;
+            z-index: -1;
+        }
+        
+        .tech-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border-radius: 50px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .how-it-works {
+            position: relative;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: white;
+            font-weight: 600;
+            margin-right: 1rem;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .step-content {
+            display: inline-block;
+        }
+        
+        .step-content h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        #localVideo {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .webcam-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        #capturedImage {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+        
+        .form-control {
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
+            border-color: var(--primary);
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <h1 class="text-center">Face Recognition & Emotion Detection</h1>
+            <p class="lead text-center">Advanced AI system for identifying faces and analyzing emotions in real-time</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container card-container">
+        <!-- Demo Section -->
+        <div class="main-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-camera-retro me-2"></i> Live Demo</h2>
+                <div id="detectionStatus" class="status-badge inactive">Detection: Inactive</div>
+            </div>
+            <div class="card-body">
+                <div class="video-container">
+                    <img id="videoFeed" src="{{ url_for('video_feed') }}" class="img-fluid">
+                    <canvas id="captureCanvas"></canvas>
+                </div>
+                <div class="controls">
+                    <button id="startBtn" class="btn btn-success btn-icon">
+                        <i class="fas fa-play"></i> Start Detection
+                    </button>
+                    <button id="stopBtn" class="btn btn-danger btn-icon" disabled>
+                        <i class="fas fa-stop"></i> Stop Detection
+                    </button>
+                    <button id="registerBtn" class="btn btn-primary btn-icon">
+                        <i class="fas fa-user-plus"></i> Register Face
+                    </button>
+                </div>
+                <div class="status-container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><i class="fas fa-info-circle me-2"></i> <strong>Status:</strong> <span id="statusText">Ready</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><i class="fas fa-users me-2"></i> <strong>Registered:</strong> <span id="registeredFaces">Loading...</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <h2 class="text-center mb-4">Key Features</h2>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Face Recognition</h3>
+                    <p>Accurately identifies registered faces in real-time with confidence scores, even in varying lighting conditions.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-smile-beam"></i>
+                    </div>
+                    <h3>Emotion Detection</h3>
+                    <p>Detects seven different emotions: Angry, Disgust, Fear, Happy, Sad, Surprise, and Neutral with high accuracy.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Real-time Processing</h3>
+                    <p>Processes video frames in real-time for immediate feedback and interaction, powered by efficient algorithms.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="main-card about-section">
+            <div class="card-header">
+                <h2><i class="fas fa-info-circle me-2"></i> About the Project</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p>This project combines facial recognition with emotion detection to create an interactive system that can identify registered users and analyze their emotional states in real-time.</p>
+                        <p>The system uses advanced deep learning models trained on extensive datasets to provide accurate face recognition and emotion classification.</p>
+                        <h5 class="mt-4 mb-3">Technologies Used:</h5>
+                        <div>
+                            <span class="tech-badge"><i class="fab fa-python me-1"></i> Python</span>
+                            <span class="tech-badge"><i class="fas fa-brain me-1"></i> TensorFlow</span>
+                            <span class="tech-badge"><i class="fas fa-code me-1"></i> OpenCV</span>
+                            <span class="tech-badge"><i class="fas fa-flask me-1"></i> Flask</span>
+                            <span class="tech-badge"><i class="fab fa-js me-1"></i> JavaScript</span>
+                            <span class="tech-badge"><i class="fab fa-bootstrap me-1"></i> Bootstrap</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mt-4 mt-lg-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="mb-3">Applications</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><i class="fas fa-shield-alt me-2 text-primary"></i> Security and access control systems</li>
+                                    <li class="list-group-item"><i class="fas fa-chart-pie me-2 text-primary"></i> User experience research</li>
+                                    <li class="list-group-item"><i class="fas fa-store me-2 text-primary"></i> Retail customer analytics</li>
+                                    <li class="list-group-item"><i class="fas fa-gamepad me-2 text-primary"></i> Interactive installations and games</li>
+                                    <li class="list-group-item"><i class="fas fa-heartbeat me-2 text-primary"></i> Healthcare and patient monitoring</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="main-card how-it-works mt-4">
+            <div class="card-header">
+                <h2><i class="fas fa-cogs me-2"></i> How It Works</h2>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center mb-5">
+                    <div class="col-lg-6">
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Face Registration</h4>
+                                </div>
+                            </div>
+                            <p>Users can register their faces by capturing an image through the web interface. The system extracts facial features and stores them for future recognition.</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Face Recognition</h4>
+                                </div>
+                            </div>
+                            <p>When detection is active, the system compares detected faces with the registered database to identify known individuals with confidence scores.</p>
+                        </div>
+                        
+                        <div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Emotion Analysis</h4>
+                                </div>
+                            </div>
+                            <p>For each detected face, the system analyzes facial expressions using a deep learning model to determine the most likely emotion being displayed.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mt-4 mt-lg-0">
+                        <img src="https://images.unsplash.com/photo-1526378722484-bd91ca387e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" class="img-fluid rounded shadow" alt="How It Works">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registrationModalLabel">
+                        <i class="fas fa-user-plus me-2"></i> Register Your Face
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registrationForm">
+                        <div class="mb-3">
+                            <label for="nameInput" class="form-label">Your Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="nameInput" placeholder="Enter your name" required>
+                            </div>
+                        </div>
+                        <div class="webcam-container">
+                            <p class="text-center mb-2"><i class="fas fa-camera me-2"></i> Please allow webcam access when prompted</p>
+                            <video id="localVideo" autoplay playsinline></video>
+                        </div>
+                        <div class="d-grid">
+                            <button type="button" id="captureBtn" class="btn btn-primary" disabled>
+                                <i class="fas fa-camera me-2"></i> Capture Image
+                            </button>
+                        </div>
+                        <div id="captureResult" class="mt-3 text-center">
+                            <img id="capturedImage" style="display: none;">
+                            <p id="validationMsg" class="mt-2"></p>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                    <button type="button" id="saveRegistrationBtn" class="btn btn-success" disabled>
+                        <i class="fas fa-save me-2"></i> Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <p class="mb-0">© 2025 Face Recognition & Emotion Detection System | Developed with <i class="fas fa-heart text-danger"></i> by Keshav Joshi</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const statusText = document.getElementById('statusText');
+            const detectionStatus = document.getElementById('detectionStatus');
+            const registeredFaces = document.getElementById('registeredFaces');
+            const captureBtn = document.getElementById('captureBtn');
+            const saveRegistrationBtn = document.getElementById('saveRegistrationBtn');
+            const nameInput = document.getElementById('nameInput');
+            const capturedImage = document.getElementById('capturedImage');
+            const videoFeed = document.getElementById('videoFeed');
+            const captureCanvas = document.getElementById('captureCanvas');
+            const localVideo = document.getElementById('localVideo');
+            const validationMsg = document.getElementById('validationMsg');
+            
+            // Registration modal
+            const registrationModal = new bootstrap.Modal(document.getElementById('registrationModal'));
+            
+            // Load registered faces on page load
+            fetchRegisteredFaces();
+            
+            // Event listeners
+            startBtn.addEventListener('click', startProcessing);
+            stopBtn.addEventListener('click', stopProcessing);
+            registerBtn.addEventListener('click', () => {
+                registrationModal.show();
+                startWebcam();
+            });
+            
+            captureBtn.addEventListener('click', captureImage);
+            saveRegistrationBtn.addEventListener('click', saveRegistration);
+            
+            // Add event listener for modal close to stop webcam
+            document.getElementById('registrationModal').addEventListener('hidden.bs.modal', stopWebcam);
+            
+            // Functions
+            function startProcessing() {
+                showLoadingState(startBtn, 'Starting...');
+                
+                fetch('/start_processing', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    statusText.textContent = data.message;
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    
+                    // Update detection status badge
+                    detectionStatus.textContent = 'Detection: Active';
+                    detectionStatus.className = 'status-badge active';
+                    
+                    // Reset button state
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> Start Detection';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusText.textContent = 'Error starting processing';
+                    
+                    // Reset button state
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> Start Detection';
+                    startBtn.disabled = false;
+                });
+            }
+            
+            function stopProcessing() {
+                showLoadingState(stopBtn, 'Stopping...');
+                
+                fetch('/stop_processing', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    statusText.textContent = data.message;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    
+                    // Update detection status badge
+                    detectionStatus.textContent = 'Detection: Inactive';
+                    detectionStatus.className = 'status-badge inactive';
+                    
+                    // Reset button state
+                    stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Detection';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusText.textContent = 'Error stopping processing';
+                    
+                    // Reset button state
+                    stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Detection';
+                    stopBtn.disabled = false;
+                });
+            }
+            
+            function fetchRegisteredFaces() {
+                fetch('/get_registered_faces')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const names = data.names.join(', ') || 'None';
+                        registeredFaces.textContent = `${data.unique_count} (${names})`;
+                    } else {
+                        registeredFaces.textContent = 'Error loading';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    registeredFaces.textContent = 'Error loading';
+                });
+            }
+            
+            function startWebcam() {
+                // Show loading message
+                if (validationMsg) {
+                    validationMsg.textContent = "Accessing webcam...";
+                    validationMsg.className = "mt-2 text-info";
+                }
+                
+                // Request webcam access
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function(stream) {
+                            localVideo.srcObject = stream;
+                            captureBtn.disabled = false;
+                            statusText.textContent = 'Webcam active, ready to capture';
+                            
+                            if (validationMsg) {
+                                validationMsg.textContent = "Webcam active. Position your face in the center and click 'Capture Image'.";
+                                validationMsg.className = "mt-2 text-success";
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error("Could not access webcam:", error);
+                            statusText.textContent = 'Error accessing webcam';
+                            
+                            if (validationMsg) {
+                                validationMsg.textContent = "Error accessing webcam: " + error.message;
+                                validationMsg.className = "mt-2 text-danger";
+                            }
+                            
+                            alert("Error accessing webcam: " + error.message);
+                        });
+                } else {
+                    if (validationMsg) {
+                        validationMsg.textContent = "Sorry, your browser doesn't support webcam access";
+                        validationMsg.className = "mt-2 text-danger";
+                    }
+                    
+                    alert("Sorry, your browser doesn't support webcam access");
+                }
+            }
+            
+            function stopWebcam() {
+                if (localVideo.srcObject) {
+                    const tracks = localVideo.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                    localVideo.srcObject = null;
+                }
+                captureBtn.disabled = true;
+                
+                // Reset capture area
+                capturedImage.style.display = 'none';
+                saveRegistrationBtn.disabled = true;
+                
+                if (validationMsg) {
+                    validationMsg.textContent = "";
+                }
+            }
+            
+            function captureImage() {
+                // Set up canvas
+                captureCanvas.width = localVideo.videoWidth;
+                captureCanvas.height = localVideo.videoHeight;
+                const ctx = captureCanvas.getContext('2d');
+                
+                // Draw the current video frame to the canvas
+                ctx.drawImage(localVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+                
+                // Add guidelines for better face alignment (optional)
+                const centerX = captureCanvas.width / 2;
+                const centerY = captureCanvas.height / 2;
+                const radius = Math.min(captureCanvas.width, captureCanvas.height) * 0.4;
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Display the captured image
+                capturedImage.src = captureCanvas.toDataURL('image/jpeg');
+                capturedImage.style.display = 'block';
+                
+                // Enable save button
+                saveRegistrationBtn.disabled = false;
+                
+                // Add validation message
+                if (validationMsg) {
+                    validationMsg.textContent = "Image captured. Make sure your face is clearly visible.";
+                    validationMsg.className = "mt-2 text-info";
+                }
+            }
+            
+            function saveRegistration() {
+                const name = nameInput.value.trim();
+                
+                if (!name) {
+                    if (validationMsg) {
+                        validationMsg.textContent = "Please enter your name";
+                        validationMsg.className = "mt-2 text-danger";
+                    }
+                    return;
+                }
+                
+                if (!capturedImage.src || capturedImage.style.display === 'none') {
+                    if (validationMsg) {
+                        validationMsg.textContent = "Please capture an image first";
+                        validationMsg.className = "mt-2 text-danger";
+                    }
+                    return;
+                }
+                
+                // Show loading state
+                showLoadingState(saveRegistrationBtn, 'Saving...');
+                
+                if (validationMsg) {
+                    validationMsg.textContent = "Registering face...";
+                    validationMsg.className = "mt-2 text-info";
+                }
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('image', capturedImage.src);
+                
+                // Send registration request
+                fetch('/register_face', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Reset button state
+                    saveRegistrationBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save';
+                    
+                    if (data.status === 'success') {
+                        if (validationMsg) {
+                            validationMsg.textContent = "Face registered successfully!";
+                            validationMsg.className = "mt-2 text-success";
+                        }
+                        
+                        // Show success message with a slight delay before closing modal
+                        setTimeout(() => {
+                            registrationModal.hide();
+                            
+                            // Reset form
+                            nameInput.value = '';
+                            capturedImage.style.display = 'none';
+                            saveRegistrationBtn.disabled = true;
+                            
+                            if (validationMsg) {
+                                validationMsg.textContent = "";
+                            }
+                            
+                            // Refresh registered faces
+                            fetchRegisteredFaces();
+                            
+                            // Show success toast
+                            showToast('Success', 'Face registered successfully!', 'success');
+                        }, 1000);
+                    } else {
+                        if (validationMsg) {
+                            validationMsg.textContent = `Error: ${data.message}`;
+                            validationMsg.className = "mt-2 text-danger";
+                        }
+                        
+                        // Show error toast
+                        showToast('Error', data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    
+                    // Reset button state
+                    saveRegistrationBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save';
+                    
+                    if (validationMsg) {
+                        validationMsg.textContent = "An error occurred during registration";
+                        validationMsg.className = "mt-2 text-danger";
+                    }
+                    
+                    // Show error toast
+                    showToast('Error', 'An error occurred during registration', 'danger');
+                });
+            }
+            
+            // Helper function to show loading state on buttons
+            function showLoadingState(button, text) {
+                const originalContent = button.innerHTML;
+                button.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${text}`;
+            }
+            
+            // Create and show toast notifications
+            function showToast(title, message, type) {
+                // Create toast container if it doesn't exist
+                let toastContainer = document.querySelector('.toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                    document.body.appendChild(toastContainer);
+                }
+                
+                // Create toast element
+                const toastId = 'toast-' + Date.now();
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-white bg-${type} border-0`;
+                toast.id = toastId;
+                toast.setAttribute('role', 'alert');
+                toast.setAttribute('aria-live', 'assertive');
+                toast.setAttribute('aria-atomic', 'true');
+                
+                // Toast content
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <strong>${title}:</strong> ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                // Add toast to container
+                toastContainer.appendChild(toast);
+                
+                // Initialize and show toast
+                const toastInstance = new bootstrap.Toast(toast, {
+                    autohide: true,
+                    delay: 5000
+                });
+                toastInstance.show();
+                
+                // Remove toast from DOM after it's hidden
+                toast.addEventListener('hidden.bs.toast', function () {
+                    toast.remove();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
